@@ -1,0 +1,219 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>gov.lanl.bloom</groupId>
+  <artifactId>bloom-app</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>bloom-app</name>
+  <url>http://maven.apache.org</url>
+  <build>
+        <plugins>
+ <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+ </plugin>
+            <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+	        <version>1.5.0</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+              <mainClass>gov.lanl.bloom.BloomLoader</mainClass>
+	    </configuration> 
+            </plugin>
+
+   <plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-assembly-plugin</artifactId>
+  <version>3.0.0</version>
+  <configuration>
+    <!-- get all project dependencies -->
+    <descriptorRefs>
+      <descriptorRef>jar-with-dependencies</descriptorRef>
+    </descriptorRefs>
+    <!-- MainClass in mainfest make a executable jar -->
+    <archive>
+        <manifest>
+          <mainClass>gov.lanl.bloom.BloomLoader</mainClass>
+        </manifest>
+    </archive>
+  </configuration>
+  <executions>
+      <execution>
+        <id>make-assembly</id>
+         <!-- bind to the packaging phase -->
+         <phase>package</phase>
+         <goals>
+         <goal>single</goal>
+         </goals>
+      </execution>
+  </executions>
+ </plugin> 
+	</plugins>
+ </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+   <dependency>
+       <groupId>com.baqend</groupId>
+       <artifactId>bloom-filter</artifactId>
+       <version>1.0.7</version>
+   </dependency>
+   <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-math3</artifactId>
+    <version>3.0</version>
+</dependency>
+   <dependency>
+  <groupId>com.opencsv</groupId>
+  <artifactId>opencsv</artifactId>
+  <version>3.8</version>
+</dependency>
+<!--<dependency>
+    <groupId>com.massisframework.j3d</groupId>
+    <artifactId>java3d-core</artifactId>
+    <version>1.6.0</version>
+</dependency>
+<dependency>
+    <groupId>com.massisframework.j3d</groupId>
+    <artifactId>vecmath</artifactId>
+    <version>1.6.0.1</version>
+</dependency>-->
+<!-- https://mvnrepository.com/artifact/org.jogamp.gluegen/gluegen-rt-main -->
+<dependency>
+    <groupId>org.jogamp.gluegen</groupId>
+    <artifactId>gluegen-rt-main</artifactId>
+    <version>2.3.2</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.archive.wayback/wayback-core -->
+<dependency>
+    <groupId>org.archive.wayback</groupId>
+    <artifactId>wayback-core</artifactId>
+    <version>1.8.0</version>
+</dependency>
+            <dependency>
+	      <groupId>org.glassfish.grizzly</groupId>
+	      <artifactId>grizzly-http-servlet</artifactId>
+	       <version>2.3.24</version>
+	       <exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+          </dependency>
+          <dependency>
+	<groupId>org.glassfish.grizzly</groupId>
+	<artifactId>grizzly-http-server</artifactId>
+	<version>2.3.24</version>
+	<exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+	<groupId>org.glassfish.jersey.containers</groupId>
+	<artifactId>jersey-container-grizzly2-http</artifactId>
+	<version>2.22.2</version>
+	 <exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency> 
+<dependency>
+	<groupId>org.glassfish.jersey.core</groupId>
+	<artifactId>jersey-client</artifactId>
+	<version>2.22.2</version>
+</dependency>
+<dependency>
+	<groupId>org.glassfish.jersey.core</groupId>
+	<artifactId>jersey-common</artifactId>
+	<version>2.22.2</version>
+</dependency>
+<dependency>
+	<groupId>org.glassfish.jersey.containers</groupId>
+	<artifactId>jersey-container-servlet</artifactId>
+	<version>2.22.2</version>
+	 <exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+	<groupId>org.glassfish.jersey.core</groupId>
+	<artifactId>jersey-server</artifactId>
+	<version>2.22.2</version>
+	 <exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+<groupId>javax.servlet</groupId>
+<artifactId>javax.servlet-api</artifactId>
+<version>3.1.0</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.grizzly</groupId>
+    <artifactId>grizzly-utils</artifactId>
+    <version>2.0-b2</version>
+    <exclusions>
+        <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<!--
+<dependency>
+    <groupId>java3d</groupId>
+    <artifactId>j3dcore</artifactId>
+    <version>1.5.2</version>
+</dependency>
+<dependency>
+    <groupId>java3d</groupId>
+    <artifactId>j3dutils</artifactId>
+    <version>1.5.2</version>
+</dependency> -->
+</dependencies>
+<repositories>
+   <repository>
+       <snapshots>
+        <enabled>false</enabled>
+       </snapshots>
+       <id>central</id>
+       <name>bintray</name>
+       <url>http://jcenter.bintray.com</url>
+   </repository>
+    <repository>
+     <id>archive</id>
+   <url>https://builds.archive.org/maven2/</url>
+   </repository>  
+</repositories>
+</project>
