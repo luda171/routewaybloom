@@ -14,7 +14,9 @@ $ mvn clean package
 ## Load predefined 16 Bloom filters to Redis db
 	add list of directories where are cdx files reside to dirs.txt
         edit runcdxtobloom.sh with local parameters
+``` sh	
 ./runcdxtobloom.sh
+```
 ## Start Lookup service
        After loading the redis db start lookup service:
 
