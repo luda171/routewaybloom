@@ -68,16 +68,9 @@ public class MultipleBloomLoader {
 	        }
 	}
 	
-	 void load_cdxfile(String Fname,String gzip){
+	 void load_cdxfile(String Fname,String gzip,CSVWriter cwr){
 		 
-		 CSVWriter cwr = null;
-    	 File resfile = new File("loadstats.csv");
-    		try {
-    			cwr = new CSVWriter(new FileWriter(resfile));
-    		} catch (IOException e2) {
-    			// TODO Auto-generated catch block
-    			e2.printStackTrace();
-    		}
+		
 		 
 		 CSVReader wr=null;
 		try {
@@ -156,12 +149,7 @@ public class MultipleBloomLoader {
 				e.printStackTrace();
 			}
 			finally {
-				try {
-					cwr.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 				try {
 					wr.close();
 				} catch (IOException e) {
@@ -213,6 +201,15 @@ public class MultipleBloomLoader {
 		 String gzip = arg.get("gzip", "false");
 		 MultipleBloomLoader mb = new MultipleBloomLoader();
 		 long start = System.nanoTime();
+		 CSVWriter cwr = null;
+    	 File resfile = new File("loadstats.csv");
+    		try {
+    			cwr = new CSVWriter(new FileWriter(resfile));
+    		} catch (IOException e2) {
+    			// TODO Auto-generated catch block
+    			e2.printStackTrace();
+    		}
+		 
 		 try {
 	            //reading from file where dirs
 				reader = new BufferedReader(new FileReader(fname));
@@ -232,7 +229,7 @@ public class MultipleBloomLoader {
 							//System.out.println("filename:"+line +file.getName());
 							String abspath=file.getAbsolutePath();
 							 mb.load_filters();
-							 mb.load_cdxfile(abspath,gzip);
+							 mb.load_cdxfile(abspath,gzip,cwr);
 							 long diff1 = System.nanoTime() - start1;
 								double elapsedTimeInSecond1 = (double) diff1 / 1000000000;
 								System.out.println("file"+ abspath+"loadind time"+elapsedTimeInSecond1 + " seconds");
@@ -241,7 +238,7 @@ public class MultipleBloomLoader {
 						
 					}
 		 
-		
+		cwr.flush();
 		
 					line = reader.readLine();
 		
@@ -258,7 +255,12 @@ public class MultipleBloomLoader {
 			e.printStackTrace();
 		}
 		 finally {
-			 
+			 try {
+					cwr.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 		 }
 		 
 	 }
