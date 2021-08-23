@@ -5,17 +5,26 @@ https://github.com/Baqend/Orestes-Bloomfilter
       Redis db:
       see Redis Installation:
       https://redis.io/download
-      Start Redis with $ redis-server. The server will listen on port 6379.
-
+      For simple check start Redis with $ redis-server. The server will listen on port 6379.
+      I used https://redis.io/topics/quickstart "Installing Redis more properly" section
+      config  /etc/redis/6379.conf 
+      sudo /etc/init.d/redis_6379 start
+      some redis-cli commands:
+      redis-cli save
+      redis-cli shutdown
+      redis-cli KEYS*
+                INFO keyspace
+ 
 ## with maven installed 
 ``` sh
 $ mvn clean package
 ```
 ## Load predefined 16 Bloom filters to Redis db
-	add list of directories where are cdx files reside to dirs.txt
-        edit runcdxtobloom.sh with local parameters
-``` sh	
-./runcdxtobloom.sh
+	
+        edit loadcdxtobloom.sh or loadcdxtobloom_mult.sh  with local parameters
+``` sh
+	
+./loadcdxtobloom_mult.sh
 ```
 ## Start Lookup service
        After loading the redis db start lookup service:
