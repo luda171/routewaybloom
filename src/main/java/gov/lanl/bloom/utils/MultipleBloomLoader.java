@@ -218,7 +218,7 @@ public class MultipleBloomLoader {
 		 CSVParser csvParser = null;
 		        try {
 				FileReader reader = new FileReader(Fname);
-				csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(' ')) ;
+				csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(' ').withIgnoreEmptyLines().withQuote(null)) ;
 				
 				for(CSVRecord record : csvParser) {
 					String url = record.get(0).trim();
