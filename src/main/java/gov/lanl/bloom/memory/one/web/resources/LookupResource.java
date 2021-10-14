@@ -1,4 +1,4 @@
-package gov.lanl.bloom.web.resources;
+package gov.lanl.bloom.memory.one.web.resources;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -24,16 +24,16 @@ import orestes.bloomfilter.BloomFilter;
 
 @Path("")
 public class LookupResource {
-	static HashMap filters_;
 	
+	static BloomFilter filter;
 	 static {
 		    System.out.println("lookupresource init");
 	        InitBloomFiltersServlet cl = InitBloomFiltersServlet.getInstance();
-	        filters_ =   (HashMap) cl.getAttribute("filters");
+	        filter =   (BloomFilter) cl.getAttribute("filter");
 	 }
 	
     @GET
-	@Path("haw/{id:.*}")
+	@Path("col/{id:.*}")
 	//@Produces("application/json")
 	public Response lookup(@PathParam("id") String url) {
 		System.out.println(url);
@@ -52,7 +52,7 @@ public class LookupResource {
 		
 	}
     @HEAD
-   	@Path("haw/{id:.*}")
+   	@Path("col/{id:.*}")
    	//@Produces("application/json")
    	public Response hlookup(@PathParam("id") String url) {
    		System.out.println(url);
@@ -72,28 +72,12 @@ public class LookupResource {
    	}
     
 	@GET
-	@Path("haw/norm/{id:.*}")
+	@Path("col/norm/{id:.*}")
 	//@Produces("application/json")
 	public Response lookupnorm(@PathParam("id") String normurl) {
 		System.out.println(normurl);
-	     //BloomRecorderUtil br = new BloomRecorderUtil();
-	    // String ha = br.getMd5(normurl);
-	     MessageDigest md5 = null;
-			try {
-				md5 = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} // you can change it to SHA1 if needed!
-		    md5.update(normurl.getBytes(), 0, normurl.length());
-		    String ha = new BigInteger(1, md5.digest()).toString(16);
-		    while (ha.length() < 32) {
-                ha = "0" + ha;
-            }
-	     
-	     String filtername ="haw"+ha.charAt(0);
-	     BloomFilter bf=(BloomFilter) filters_.get(filtername);
-	     if (bf.contains(normurl)) {
+	      
+	     if (filter.contains(normurl)) {
 		 return Response.status(200).build(); }
 	     else {
 	    	 return Response.status(404).build(); 
@@ -102,28 +86,17 @@ public class LookupResource {
 	}
 	
 	@HEAD
-	@Path("haw/norm/{id:.*}")
+	@Path("col/norm/{id:.*}")
 	//@Produces("application/json")
 	public Response hlookupnorm(@PathParam("id") String normurl) {
 		System.out.println(normurl);
 	     //BloomRecorderUtil br = new BloomRecorderUtil();
 	    // String ha = br.getMd5(normurl);
-	     MessageDigest md5 = null;
-			try {
-				md5 = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} // you can change it to SHA1 if needed!
-		    md5.update(normurl.getBytes(), 0, normurl.length());
-		    String ha = new BigInteger(1, md5.digest()).toString(16);
-		    while (ha.length() < 32) {
-                ha = "0" + ha;
-            }
 	     
-	     String filtername ="haw"+ha.charAt(0);
-	     BloomFilter bf=(BloomFilter) filters_.get(filtername);
-	     if (bf.contains(normurl)) {
+	     
+	     
+	    
+	     if (filter.contains(normurl)) {
 		 return Response.status(200).build(); }
 	     else {
 	    	 return Response.status(404).build(); 

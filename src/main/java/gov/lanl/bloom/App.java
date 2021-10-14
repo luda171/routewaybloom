@@ -153,7 +153,7 @@ public class App {
 			BloomFilter<String> bfr = (BloomFilter<String>) filters.get(filterName);
 			//System.out.println("size:"+bfr.getSize());
 			JsonElement json = BloomFilterConverter.toJson(bfr);
-
+			BloomFilter<String> otherBf = BloomFilterConverter.fromJson(json);
 			try {
 
 				FileWriter ffile = new FileWriter("/data2/redisdata_6379/json/" + filterName + ".json");
