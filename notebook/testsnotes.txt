@@ -1,0 +1,167 @@
+Two possible operational scenarios and application examples we discussed at our last meeting:
+
+Memory-based
+Designed to be done at the archive with the intention to share serialized BF
+CDX file(s) to Bloom Filter conversion, in memory
+Bloom Filter serialized to CSV file 
+CSV file can be made available to partners (via Sitemaps and HTTP download, for example)
+Partners can load the CVS file into memory and offer services to represent the collection
+
+
+RedisDB-based service
+Designed to be done at the archive with no intention to share serialized BF
+CDX file(s) to Bloom Filter conversion, in RedisDB
+Archive can offer services to represent the collection
+
+
+Description of tests done at LANL and results shown below, to reproduce at HAW and comparison of results
+
+Test #1 (memory-based scenario)
+To load Bloom Filter memory-based (murmur3) and unload to csv :
+Execute on command line: nohup ./oneunload.sh > oneunload.txt & 
+
+From inside the shell script: 
+/usr/lib/jvm/jre-1.8.0/bin/java  -classpath $THE_CLASSPATH  gov.lanl.bloom.memory.one.BloomWriter  -dirtounload  /data2/haw/ -cdxfile /data2/haw/harvest-2020-index.cdx  -filtername haw20 -numberofelements 200000000 -probability
+ 0.01  -numberofhashes 5 
+
+LANL results for initially shared 2020 CDX file:
+
+number of recods:	180379433
+time to load to bloom:	1382.698968367 seconds
+
+Test false //test with urls that belong to filter
+Positive:	180379433
+Negative:	0
+Total:	180379433
+mean in Milliseconds:	8.085696075283709E-4
+population variance in Milliseconds:	1.2449718573481918E-4
+standard deviation in Milliseconds:	0.011157830722188579
+population standard deviation in Milliseconds:	0.011157830691259802
+
+Test true  //test with urls that not belong to filter
+Positive:	1186190
+Negative:	179193243
+Total:	180379433
+mean in Milliseconds:	8.084628058399974E-4
+population variance in Milliseconds:	1.0835013729668134E-4
+standard deviation in Milliseconds:	0.010409137231171484
+population standard deviation in Milliseconds:	0.010409137202318036
+Namehaw:20
+Murmur3
+time to serialize from memory to csv:	2.576210416 seconds
+
+
+
+
+Test #2 (RedisDB-based scenario)
+To load Bloom Filter into RedisDB:
+Execute on command line: nohup ./oneunload.sh > oneunload_r.txt & 
+
+From inside the shell script:
+/usr/lib/jvm/jre-1.8.0/bin/java  -classpath $THE_CLASSPATH  gov.lanl.bloom.memory.one.BloomWriter  -dirtounload  /data2/haw/ -cdxfile /data2/haw/harvest-2020-index.cdx  -filtername haw20 -numberofelements 200000000 -probability
+ 0.01  -numberofhashes 5   -redis true
+
+
+LANL results for initially shared 2020 CDX file:
+
+time to load to bloom:	7273.562344686 seconds
+
+Test false  //test with urls that belong to filter
+Positive:	180379433
+Negative:	0
+Total:	180379433
+mean in Milliseconds:	0.033132878424376636
+population variance in Milliseconds:	0.002928535409476303
+standard deviation in Milliseconds:	0.05411594428365563
+population standard deviation in Milliseconds:	0.05411594413364977
+
+Test true   //test with urls that not belong to filter
+Positive:	1186190
+Negative:	179193243
+Total:	180379433
+mean in Milliseconds:	0.0331921540680029
+population variance in Milliseconds:	0.0023459930453331294
+standard deviation in Milliseconds:	0.04843545249441785
+population standard deviation in Milliseconds:	0.04843545236015794
+namehaw2020
+Murmur3
+time to serialize from memory to csv:	16.808621865 seconds
+
+
+
+
+Test #3 (RedisDB-based scenario, system of 16 orthogonal filters)
+Before the test delete all old keys in the database 
+$>    redis-cli KEYS "haw*" | xargs redis-cli DEL
+
+Redis-cli  
+keys *
+
+
+Filters Params  for the record:
+//here we have Murmur3
+              int numberofelements=200000000;
+	float prob = 0.01f;
+              int numbh  = 5;
+    
+            char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+   Note:  Loading has the additional operation of md5 of url and determination to which filter to put 
+
+Loading to 16 orthogonal filters
+Attention:  parameter clarification  -dirfilename dir.txt     the dir.txt file has a list of directories  where cdx files reside
+Execute on command line: nohup ./runcdxtobloom.sh > multiloadredistest.out &
+ 
+
+LANL results (all HAW CDX files) (file produced by shell script: loadstats.csv):
+
+"Fname","recordcount","loadTimeInSecond"
+"/data1/haw/index-2017.cdx","85003467","3801.229491167"
+"/data1/haw/index-2016.cdx","93152112","3891.038690262"
+"/data1/haw/index-2020.cdx","180379433","7469.478345577"
+"/data1/haw/index-2015.cdx","88303363","3683.10829951"
+"/data1/haw/index-2018.cdx","156308196","6476.537223447"
+"/data1/haw/index-2012.cdx","69197158","2884.026416439"
+"/data1/haw/index-2014.cdx","94445269","3946.300631771"
+"/data1/haw/index-2011.cdx","65525756","2731.744634681"
+"/data1/haw/index-2013.cdx","80006504","3339.867583133"
+"/data1/haw/index-2019.cdx","164433243","6831.80026085"
+Testing query speed and false positive rate.
+
+Execute on command line: nohup ./testtobloom.sh > multitest_r.out &
+
+LANL results:
+Test true   //test with urls that not belong to filter
+Positive:	1651
+Negative:	180377782
+Total:	180379433
+mean in Milliseconds:	0.035589068285251824
+population variance in Milliseconds:	0.001874923236527767
+standard deviation in Milliseconds:	0.04330038391194813
+population standard deviation in Milliseconds:	0.043300383791922296
+
+Test false  //test with urls that  belong to filter
+Positive:	180379433
+Negative:	0
+Total:	180379433
+mean in Milliseconds:	0.035480245562280924
+population variance in Milliseconds:	0.002425067398182643
+standard deviation in Milliseconds:	0.0492449734655924
+population standard deviation in Milliseconds:	0.04924497332908855
+
+
+
+
+Supplemental information
+Example of csv file (2 lines: header line and filter line( BASE64 encoded bytes  0100010001 ….):
+name,archive,HashMethod,m,k,BF
+haw20,haw,Murmur3,1917011685,5,4KRos6AHFI6iiQEhiUQYVaoiRpTHI8kAMbRA+j4CGGApWFJZIKsjWAZpawnBM0uRQIgSBpEk8KtWRR4LxzIsABcTARrCKkMUAhyC+UcRAFEEoAxagTyRomhBlaDYMYBInwBFIEqUyMw4PDxIxRKvgoA
+dNBSIoARg0pAZyhAsACmADIILKwFDRG9+WwJ9FM9D80ASHPuC6CxhhgGEQgsGqUIAqEaAR4OUCrYKKgixqEAc0UkrTmwQBkhAi0kQQOHjyJxRAL4jkIJGHqFxrMUSwmUnIAROQaHeKpktY5kzKSw43fBw+EgR+kUamQBpTTQAqeUIBETPXJF0g
+iADCnUeWRIWAZQyEEkRgCpICyQQVyuiEUCY2AilNEhEmAEmuTEOCMXwoBYNECChGngSlCADgKyjAYAE0VKNMhqFJscGxORJWSCGADZCDcUhQSgtOqBkXgCscVlPQyeAnj0ZBCiEGiBaLv8CubAHgJl4CIoBCwJ1kBhUfwDTVElJGUJajPNTEoh
+0IEwD1GCAOBIZWEfEkqDjAL4MAwwmBDXBsSxFYQQ0FJEJ/DIGkRiaRRQiqQ0wmQC+sFCWwsuCugDJHgVpRgIo4RAPwgpwIIscoLPR+AK8RkA5pZAQGkM0NscPakuMyDILkpBkY5qA0IleCvMaUiAAYVMBKJQrQjZHBFxnhYcdPsswKYjAEeNQI
+JXAQQKYRJqqGWJOUAhpxREA8aJwoCwjgkRCBgC4QJQsyNaCLg4VQIeUBAYrgcGAowHQMggJnQlOkofb+euDenyQBIRY0oPUzQQ5iCJrKJyrAkAIuH4qGQBRApRQ18CBIgKACKrwA6HQAxDIAGIhT5lIAMMuUxYyHBLNNVh8PdQ5BkwG2GC3Y4Z
+tg2UAggtIT+lEGAEJBJAEBU9VGkS4hC0NYVeCYAAktM9glqvCESh9dGIHgQuQ8AgBxqRHCjEiGEA4hVcGYULPcSRQSCqYAJGw3zwiwT8kH2g4SQgMgghlCHBwcgCTVWACFBAyQQRCGD4JIKaFItsIJkAqVDnAwekuE9IFeSFMrOo4WRFuQRCEi
+Q …..  250 M of string
+
+The maximum Json library string is 3641144 characters. (tried both Jackson and Gson java libraries)
+Bloom Filter doesn't support more than 2 billion elements:
+public BitSet(int nbits). BF doesn't grow more than pow(2, 31) size. ~250M
